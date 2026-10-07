@@ -5,111 +5,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const hearts = ["❤️", "💕", "💗", "💖", "🤍", "✨", "🌸"];
 
+  // =========================
+  // MUSIC
+  // =========================
 
-  /* =====================================
-     🎵 MUSIC
-  ===================================== */
+  const birthdayMusic = new Audio("song-birthday.mp3");
+  const hukumMusic = new Audio("song-hukum-ka-ekka.mp3");
+  const chahiyeMusic = new Audio("song-tu-chahiye.mp3");
 
-  const birthdaySong = new Audio("./song-birthday.mp3");
-  const hukumSong = new Audio("./song-hukum-ka-ekka.mp3");
-  const tuChahiyeSong = new Audio("./song-tu-chahiye.mp3");
+  birthdayMusic.loop = true;
+  hukumMusic.loop = true;
+  chahiyeMusic.loop = true;
 
-  birthdaySong.preload = "auto";
-  hukumSong.preload = "auto";
-  tuChahiyeSong.preload = "auto";
-
-  birthdaySong.volume = 0.7;
-  hukumSong.volume = 0.7;
-  tuChahiyeSong.volume = 0.7;
-
-  birthdaySong.loop = false;
-  hukumSong.loop = true;
-  tuChahiyeSong.loop = true;
-
+  birthdayMusic.volume = 0.7;
+  hukumMusic.volume = 0.7;
+  chahiyeMusic.volume = 0.7;
 
   function stopAllMusic() {
+    birthdayMusic.pause();
+    hukumMusic.pause();
+    chahiyeMusic.pause();
 
-    birthdaySong.pause();
-    hukumSong.pause();
-    tuChahiyeSong.pause();
-
+    birthdayMusic.currentTime = 0;
+    hukumMusic.currentTime = 0;
+    chahiyeMusic.currentTime = 0;
   }
 
-
-  function playBirthdaySong() {
-
+  function playMusic(song) {
     stopAllMusic();
 
-    birthdaySong.currentTime = 0;
-
-    birthdaySong.play()
-      .then(() => {
-        console.log("🎂 Birthday song playing");
-      })
-      .catch(error => {
-        console.log("Birthday song error:", error);
-      });
-
+    song.play().catch(error => {
+      console.log("Music could not start:", error);
+    });
   }
 
 
-  function playHukumSong() {
-
-    stopAllMusic();
-
-    hukumSong.currentTime = 0;
-
-    hukumSong.play()
-      .then(() => {
-        console.log("❤️ Hukum Ka Ekka playing");
-      })
-      .catch(error => {
-        console.log("Hukum song error:", error);
-      });
-
-  }
-
-
-  function playTuChahiyeSong() {
-
-    stopAllMusic();
-
-    tuChahiyeSong.currentTime = 0;
-
-    tuChahiyeSong.play()
-      .then(() => {
-        console.log("🥺 Tu Chahiye playing");
-      })
-      .catch(error => {
-        console.log("Tu Chahiye error:", error);
-      });
-
-  }
-
-
-  /* =====================================
-     📱 SCREEN CHANGE
-  ===================================== */
+  // =========================
+  // SCREEN CONTROL
+  // =========================
 
   function show(id) {
+    screens.forEach(s => s.classList.remove("active"));
 
-    screens.forEach(screen => {
-      screen.classList.remove("active");
-    });
-
-    const target = $(id);
-
-    if (target) {
-      target.classList.add("active");
-    }
+    $(id).classList.add("active");
 
     window.scrollTo(0, 0);
   }
 
 
-  /* =====================================
-     ❤️ HEARTS
-  ===================================== */
+  // =========================
+  // FLOATING HEARTS
+  // =========================
 
   function heartsGo(n = 15) {
 
@@ -132,31 +78,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       $("hearts").appendChild(h);
 
-      setTimeout(() => {
-        h.remove();
-      }, 8500);
-
+      setTimeout(() => h.remove(), 8500);
     }
-
   }
 
 
-  /* =====================================
-     💌 OPEN BUTTON
-  ===================================== */
+  // =========================
+  // OPEN SURPRISE
+  // =========================
 
   $("openBtn").onclick = () => {
-
-    /*
-      IMPORTANT:
-      Browser ko user click mil gaya.
-      Isliye audio elements ko yahin initialize
-      kar rahe hain.
-    */
-
-    birthdaySong.load();
-    hukumSong.load();
-    tuChahiyeSong.load();
 
     show("countdown");
 
@@ -166,52 +97,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     $("number").textContent = n;
     $("minutes").textContent = "seconds left ❤️";
-    $("progress").style.width = "0%";
 
-
-    const timer = setInterval(() => {
+    const t = setInterval(() => {
 
       n--;
 
       $("number").textContent = n;
 
-
-      if (n > 1) {
-
-        $("minutes").textContent =
-          "seconds left ❤️";
-
-      }
-
-      else if (n === 1) {
-
-        $("minutes").textContent =
-          "second left ❤️";
-
-      }
-
-      else {
-
-        $("minutes").textContent = "❤️";
-
-      }
-
+      $("minutes").textContent =
+        n > 1
+          ? "seconds left ❤️"
+          : n === 1
+          ? "second left ❤️"
+          : "❤️";
 
       $("progress").style.width =
         ((20 - n) / 20 * 100) + "%";
 
-
       heartsGo(2);
-
-
-      /* =================================
-         🎂 COUNTDOWN FINISHED
-         BIRTHDAY SONG STARTS
-      ================================= */
 
       if (n <= 0) {
 
-        clearInterval(timer);
+        clearInterval(t);
 
         setTimeout(() => {
 
@@ -219,22 +126,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
           heartsGo(35);
 
-          playBirthdaySong();
+          // 🎵 BIRTHDAY SONG STARTS
+          playMusic(birthdayMusic);
 
           setTimeout(showMessages, 3300);
 
         }, 800);
-
       }
 
     }, 1000);
-
   };
 
 
-  /* =====================================
-     🎂 BIRTHDAY MESSAGES
-  ===================================== */
+  // =========================
+  // BIRTHDAY MESSAGES
+  // =========================
 
   function showMessages() {
 
@@ -242,8 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     $("messageList").innerHTML = "";
 
-
-    const messages = [
+    const a = [
 
       "Happy Birthday, Aman! 🎂❤️",
 
@@ -261,53 +166,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
     ];
 
-
-    messages.forEach((message, index) => {
+    a.forEach((x, i) => {
 
       setTimeout(() => {
 
-        const div = document.createElement("div");
+        const d = document.createElement("div");
 
-        div.className = "message";
+        d.className = "message";
 
-        div.textContent = message;
+        d.textContent = x;
 
-        $("messageList").appendChild(div);
+        $("messageList").appendChild(d);
 
-      }, index * 650);
+      }, i * 650);
 
     });
-
 
     setTimeout(() => {
 
       $("giftButton").classList.remove("hidden");
 
-    }, messages.length * 650 + 500);
-
+    }, a.length * 650 + 500);
   }
 
 
-  /* =====================================
-     🎁 GIFT
-  ===================================== */
+  // =========================
+  // GIFT
+  // =========================
 
   $("giftButton").onclick = () => {
 
     show("gift");
 
     heartsGo(20);
-
   };
 
 
-  /* =====================================
-     😂 TWIST
-  ===================================== */
+  // =========================
+  // TWIST
+  // =========================
 
   function twist() {
 
-    const lines = [
+    const a = [
 
       "Wait...",
 
@@ -317,109 +218,95 @@ document.addEventListener("DOMContentLoaded", () => {
 
       "Seriously, Aman? 😂",
 
-      "You really thought THIS was the whole birthday surprise?😌❤️",
+      "You really thought THIS was the whole birthday surprise? 😌❤️",
 
       "That was just the trailer."
 
     ];
 
-
     let i = 0;
 
+    function next() {
 
-    function nextLine() {
-
-      if (i >= lines.length) {
+      if (i >= a.length) {
 
         $("realButton").classList.remove("hidden");
 
         heartsGo(35);
 
         return;
-
       }
-
 
       $("twistText").style.opacity = 0;
 
-
       setTimeout(() => {
 
-        $("twistText").textContent = lines[i];
-
-        i++;
+        $("twistText").textContent = a[i++];
 
         $("twistText").style.opacity = 1;
 
-        setTimeout(nextLine, 1400);
+        setTimeout(next, 1400);
 
       }, 450);
-
     }
 
-
-    nextLine();
-
+    next();
   }
 
+
+  // =========================
+  // GIFT → TWIST
+  // =========================
 
   $("giftEmoji").onclick = () => {
 
     show("twist");
 
     twist();
-
   };
 
 
-  $("giftEmoji").onkeydown = event => {
+  $("giftEmoji").onkeydown = e => {
 
-    if (
-      event.key === "Enter" ||
-      event.key === " "
-    ) {
+    if (e.key === "Enter" || e.key === " ") {
 
-      event.preventDefault();
+      e.preventDefault();
 
       show("twist");
 
       twist();
-
     }
-
   };
 
 
-  /* =====================================
-     ❤️ REAL STORY
-  ===================================== */
+  // =========================
+  // REAL SURPRISE
+  // =========================
 
   $("realButton").onclick = () => {
 
     show("realStory");
 
     heartsGo(30);
-
   };
 
 
-  /* =====================================
-     🧑 AMAN.EXE
-  ===================================== */
+  // =========================
+  // AMAN.EXE
+  // =========================
 
   $("amanFileButton").onclick = () => {
 
     show("amanFile");
 
     heartsGo(22);
-
   };
 
 
-  /* =====================================
-     ❤️ WHY SPECIAL
-     🎵 HUKUM KA EKKA
-  ===================================== */
+  // =========================
+  // WHY AMAN IS SPECIAL
+  // 🎵 HUKUM KA EKKA
+  // =========================
 
   $("whyButton").onclick = () => {
 
@@ -427,14 +314,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     heartsGo(24);
 
-    playHukumSong();
-
+    // 🎵 SECOND SONG
+    playMusic(hukumMusic);
   };
 
 
-  /* =====================================
-     📖 STORY
-  ===================================== */
+  // =========================
+  // OUR STORY
+  // =========================
 
   $("storyButton").onclick = () => {
 
@@ -442,12 +329,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     heartsGo(25);
 
+    // Make sure second song continues
+    if (hukumMusic.paused) {
+      hukumMusic.play().catch(() => {});
+    }
   };
 
 
-  /* =====================================
-     📸 MEMORIES
-  ===================================== */
+  // =========================
+  // MEMORIES
+  // =========================
 
   $("memoriesButton").onclick = () => {
 
@@ -455,13 +346,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     heartsGo(25);
 
+    // Keep Hukum Ka Ekka playing
+    if (hukumMusic.paused) {
+      hukumMusic.play().catch(() => {});
+    }
   };
 
 
-  /* =====================================
-     💌 LETTER
-     🎵 TU CHAHIYE
-  ===================================== */
+  // =========================
+  // LETTER
+  // 🎵 TU CHAHIYE
+  // =========================
 
   $("letterButton").onclick = () => {
 
@@ -469,14 +364,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     heartsGo(30);
 
-    playTuChahiyeSong();
-
+    // 🎵 THIRD SONG
+    playMusic(chahiyeMusic);
   };
 
 
-  /* =====================================
-     🎂 FINAL
-  ===================================== */
+  // =========================
+  // FINAL
+  // =========================
 
   $("finalButton").onclick = () => {
 
@@ -484,12 +379,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     heartsGo(45);
 
+    // Keep Tu Chahiye playing
+    if (chahiyeMusic.paused) {
+      chahiyeMusic.play().catch(() => {});
+    }
   };
 
 
-  /* =====================================
-     👀 SECRET
-  ===================================== */
+  // =========================
+  // SECRET
+  // =========================
 
   $("secretButton").onclick = () => {
 
@@ -497,37 +396,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     heartsGo(60);
 
+    // Keep final song playing
+    if (chahiyeMusic.paused) {
+      chahiyeMusic.play().catch(() => {});
+    }
   };
 
 
-  /* =====================================
-     📸 IMAGE ERROR
-  ===================================== */
+  // =========================
+  // PHOTO ERROR HANDLING
+  // =========================
 
-  document
-    .querySelectorAll(".gallery img")
-    .forEach(img => {
+  document.querySelectorAll(".gallery img").forEach(img => {
 
-      img.addEventListener("error", () => {
+    img.addEventListener("error", () => {
 
-        const figure = img.closest("figure");
+      img.closest("figure").classList.add("missing");
 
-        if (figure) {
-          figure.classList.add("missing");
-        }
-
-        img.alt =
-          "Photo not found — check the filename in the photos folder.";
-
-      });
-
+      img.alt =
+        "Photo not found — check the filename.";
     });
 
+  });
 
-  /* =====================================
-     ❤️ INITIAL HEARTS
-  ===================================== */
 
+  // Initial hearts
   heartsGo(8);
 
 });
